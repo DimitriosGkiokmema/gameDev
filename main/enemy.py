@@ -4,7 +4,6 @@ from config import *
 from healthbar import *
 import random
 
-
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
         self.game = game
@@ -36,15 +35,15 @@ class Enemy(pygame.sprite.Sprite):
 
         self.health = ENEMY_HEALTH
 
-        self.shootCountner = 0
+        self.shootCounter = 0
         self.waitShoot = random.choice(range(10, 91, 10))
         self.shootState = 'halt'
 
     def shoot(self):
-        self.shootCountner += 1
-        if self.shootCountner >= self.waitShoot and self.playerInRange():
+        self.shootCounter += 1
+        if self.shootCounter >= self.waitShoot and self.playerInRange():
             self.shootState = "shoot"
-            self.shootCountner = 0
+            self.shootCounter = 0
             self.waitShoot = random.choice(range(10, 91, 10))
     
     def playerInRange(self):
@@ -71,7 +70,7 @@ class Enemy(pygame.sprite.Sprite):
                 self.currSteps += 1
             
             if self.shootState == 'shoot':
-                Enemy_Projectile(self.game, self.rect.x, self.rect.y)
+                Projectile(self.game, self.rect.x, self.rect.y, self.direction, False)
                 self.shootState = 'halt'
 
         elif self.state == "stalling":

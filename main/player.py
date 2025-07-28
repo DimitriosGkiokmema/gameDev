@@ -10,9 +10,6 @@ class Player(pygame.sprite.Sprite):
         self.healthbar = HealthBar(game, x, y, self)
         self.groups = self.game.all_sprites, self.game.main_player
         pygame.sprite.Sprite.__init__(self, self.groups)
-        
-        self.x = x * TILESIZE
-        self.y = y * TILESIZE
 
         self.width = TILESIZE
         self.height = TILESIZE
@@ -22,8 +19,8 @@ class Player(pygame.sprite.Sprite):
 
         self.image = self.game.player_spritesheet.get_image(30, 29, self.width, self.height)
         self.rect = self.image.get_rect()
-        self.rect.x = self.x
-        self.rect.y = self.y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
         self.direction = "right"
         self.animationCounter = 0
         self.swordEquipped = False
@@ -167,6 +164,7 @@ class Player(pygame.sprite.Sprite):
         collide = pygame.sprite.spritecollide(self, self.game.weapons, True)
         
         if collide:
+            print("got weapon")
             self.swordEquipped = True
 
     def shoot_fireball(self):
@@ -174,7 +172,7 @@ class Player(pygame.sprite.Sprite):
 
         if self.swordEquipped and self.canShoot:
             if pressed[pygame.K_SPACE]:
-                Projectile(self.game, self.rect.x, self.rect.y)
+                Projectile(self.game, self.rect.x, self.rect.y, "player", True)
                 self.canShoot = False
     
     def shootCooldown(self):
@@ -192,4 +190,4 @@ class Player(pygame.sprite.Sprite):
         if self.health <= 0:
             self.kill()
             self.healthbar.kill_healthbar()
-            # self.running = False
+            self.running = False
