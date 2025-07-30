@@ -157,6 +157,7 @@ class Player(pygame.sprite.Sprite):
         
         if collide:
             self.swordEquipped = True
+            self.game.play_sound("power_up.wav")
 
     def shoot_fireball(self):
         pressed = pygame.key.get_pressed()
@@ -175,6 +176,7 @@ class Player(pygame.sprite.Sprite):
                 self.canShoot = True
 
     def damage(self, amount):
+        self.game.play_sound("hurt.wav")
         self.health -= amount
         self.healthbar.damage(PLAYER_HEALTH, self.health)
 

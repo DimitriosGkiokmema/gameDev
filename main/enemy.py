@@ -166,6 +166,7 @@ class Enemy(pygame.sprite.Sprite):
             self.game.running = False
 
     def damage(self, amount):
+        self.game.play_sound("explosion.wav")
         self.health = self.health - amount
 
         if self.health <= 0:

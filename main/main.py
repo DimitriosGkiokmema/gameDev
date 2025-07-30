@@ -6,6 +6,9 @@ from weapons import *
 from spritesheet import *
 import sys
 import pygame
+import scipy.io.wavfile as wavfile
+import sounddevice as sd
+import os
 
 class Game:
     def __init__(self):
@@ -104,6 +107,13 @@ class Game:
             elif pressed[pygame.K_DOWN]:
                 for i, sprite in enumerate(self.all_sprites):
                     sprite.rect.y -= PLAYER_STEPS
+    
+    def play_sound(self, filename):
+        script_dir = os.path.dirname(__file__)
+        file_path = os.path.join(script_dir, '..', 'assets', 'sounds', filename)
+
+        sample_rate, data = wavfile.read(file_path)
+        sd.play(data, samplerate=sample_rate)
 
     def run_game(self):
         while self.running:
