@@ -11,9 +11,6 @@ class Enemy(pygame.sprite.Sprite):
         self.healthbar = HealthBar(game, x, y, self)
         self.groups = self.game.all_sprites, self.game.enemies
         pygame.sprite.Sprite.__init__(self, self.groups)
-        
-        self.x = x * TILESIZE
-        self.y = y * TILESIZE
 
         self.width = TILESIZE
         self.height = TILESIZE
@@ -21,10 +18,10 @@ class Enemy(pygame.sprite.Sprite):
         self.dx = 0
         self.dy = 0
 
-        self.image = self.game.enemy_spritesheet.get_image(63, 167, self.width, self.height)
+        self.image = self.game.enemy_spritesheet.get_sprite(63, 167, self.width, self.height)
         self.rect = self.image.get_rect()
-        self.rect.x = self.x
-        self.rect.y = self.y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
 
         self.direction = random.choice(['left', 'right', 'up', 'down'])
         self.maxSteps = random.choice(range(20, 120, 10))
@@ -38,6 +35,25 @@ class Enemy(pygame.sprite.Sprite):
         self.shootCounter = 0
         self.waitShoot = random.choice(range(10, 91, 10))
         self.shootState = 'halt'
+
+        # Loading sprite frames
+        # rightAnimation = []
+        # self.game.enemy_spritesheet.parse_sprite('right', rightAnimation)
+        # leftAnimation = [pygame.transform.flip(self.game.enemy_spritesheet.get_sprite(31, 72, self.width, self.height), True, False)]
+        # upAnimation = [self.game.enemy_spritesheet.get_sprite(160, 41, self.width, self.height)]
+        # downAnimation = [self.game.enemy_spritesheet.get_sprite(31, 38, self.width, self.height)]
+        self.rightAnimation = []
+        self.game.enemy_spritesheet.parse_sprite('right', self.rightAnimation)
+        self.upAnimation = []
+        self.game.enemy_spritesheet.parse_sprite('up', self.upAnimation)
+
+        self.leftAnimation = []
+        for frame in self.rightAnimation:
+            self.leftAnimation.append(pygame.transform.flip(frame, True, False))
+
+        self.downAnimation = []
+        for frame in self.upAnimation:
+            self.downAnimation.append(pygame.transform.flip(frame, False, True))
 
     def shoot(self):
         self.shootCounter += 1
@@ -75,6 +91,7 @@ class Enemy(pygame.sprite.Sprite):
 
         elif self.state == "stalling":
             self.currSteps += 1
+            
             if self.currSteps == self.maxSteps:
                 self.state = "moving"
                 self.currSteps = 0
@@ -100,47 +117,30 @@ class Enemy(pygame.sprite.Sprite):
         self.shoot()
     
     def animation(self):
-        rightAnimation = [self.game.enemy_spritesheet.get_image(125, 70, self.width, self.height)]
-        leftAnimation = [pygame.transform.flip(self.game.enemy_spritesheet.get_image(31, 72, self.width, self.height), True, False)]
-        upAnimation = [self.game.enemy_spritesheet.get_image(160, 41, self.width, self.height)]
-        downAnimation = [self.game.enemy_spritesheet.get_image(31, 38, self.width, self.height)]
+        currAnimation = None
+        change = None
         
         if self.direction == "right":
-            if self.dx == 0:
-                self.image = rightAnimation[0]
-            else:
-                self.image = rightAnimation[math.floor(self.animationCounter)]
-                self.animationCounter += 0.1
-
-                if self.animationCounter >= len(rightAnimation):
-                    self.animationCounter = 0
+            currAnimation = self.rightAnimation
+            change = self.dx
         elif self.direction == "left":
-            if self.dx == 0:
-                self.image = leftAnimation[0]
-            else:
-                self.image = leftAnimation[math.floor(self.animationCounter)]
-                self.animationCounter += 0.1
-
-                if self.animationCounter >= len(leftAnimation):
-                    self.animationCounter = 0
+            currAnimation = self.leftAnimation
+            change = self.dx
         elif self.direction == "up":
-            if self.dy == 0:
-                self.image = upAnimation[0]
-            else:
-                self.image = upAnimation[math.floor(self.animationCounter)]
-                self.animationCounter += 0.1
-
-                if self.animationCounter >= len(upAnimation):
-                    self.animationCounter = 0
+            currAnimation = self.upAnimation
+            change = self.dy
         elif self.direction == "down":
-            if self.dy == 0:
-                self.image = downAnimation[0]
-            else:
-                self.image = downAnimation[math.floor(self.animationCounter)]
-                self.animationCounter += 0.1
+            currAnimation = self.downAnimation
+            self.dy
+        
+        if change == 0:
+            self.image = currAnimation[0]
+        else:
+            self.image = currAnimation[math.floor(self.animationCounter)]
+            self.animationCounter += 0.15
 
-                if self.animationCounter >= len(downAnimation):
-                    self.animationCounter = 0
+            if self.animationCounter >= len(currAnimation):
+                self.animationCounter = 0
 
     def collide_blocks(self):
         collide = pygame.sprite.spritecollide(self, self.game.blocks, False)

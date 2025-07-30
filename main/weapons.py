@@ -16,15 +16,15 @@ class Weapon(pygame.sprite.Sprite):
         self.width = TILESIZE
         self.height = TILESIZE
 
-        self.image = self.game.terrain_spritesheet.get_image(48, 128, 100, 100)
+        self.image = self.game.terrain_spritesheet.get_sprite(48, 128, 100, 100)
         self.rect = self.image.get_rect()
         self.rect.x = self.x
         self.rect.y = self.y
         self.animationCounter = 0
     
     def animation(self):
-        animate = [self.game.weapons_spritesheet.get_image(171, 273, 205, 390),
-                   self.game.weapons_spritesheet.get_image(465, 800, 260, 570)]
+        animate = [self.game.weapons_spritesheet.get_sprite(171, 273, 205, 390),
+                   self.game.weapons_spritesheet.get_sprite(465, 800, 260, 570)]
 
         for i in range(len(animate)):
             animate[i] = pygame.transform.scale(animate[i], (TILESIZE, TILESIZE))
@@ -48,7 +48,7 @@ class Projectile(pygame.sprite.Sprite):
         self.width = TILESIZE
         self.height = TILESIZE
 
-        self.image = self.game.projectile_spritesheet.get_image(0, 0, 100, 100)
+        self.image = self.game.projectile_spritesheet.get_sprite(0, 0, 100, 100)
         self.image = pygame.transform.scale(self.image, (TILESIZE, TILESIZE))
         self.rect = self.image.get_rect()
         self.rect.x = x

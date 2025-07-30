@@ -3,29 +3,28 @@ from tiles import *
 from enemy import *
 from player import *
 from weapons import *
+from spritesheet import *
 import sys
 import pygame
-
-class Spritesheet:
-    def __init__(self, path):
-        self.spritesheet = pygame.image.load(path).convert()
-
-    def get_image(self, x, y, width, height):
-        sprite = pygame.Surface([width, height])
-        sprite.blit(self.spritesheet, (0, 0), (x, y, width, height))
-
-        return sprite
 
 class Game:
     def __init__(self):
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
         pygame.display.set_caption('Super Cool Game')
         self.clock = pygame.time.Clock()
-        self.terrain_spritesheet = Spritesheet('assets/images/overworld.png')
-        self.player_spritesheet = Spritesheet('assets/images/knight.png')
-        self.enemy_spritesheet = Spritesheet('assets/images/bots.png')
-        self.weapons_spritesheet = Spritesheet('assets/images/swords.png')
-        self.projectile_spritesheet = Spritesheet('assets/images/fireball.png')
+
+        # Creating Spritesheet objects
+        self.terrain_spritesheet = Spritesheet('terrain')
+        self.terrain_spritesheet.load_sheet('assets/images/overworld.png')
+        self.player_spritesheet = Spritesheet('knight')
+        self.player_spritesheet.load_sheet('assets/images/player.png')
+        self.enemy_spritesheet = Spritesheet('slime_green')
+        self.enemy_spritesheet.load_sheet('assets/images/slime_green.png')
+        self.weapons_spritesheet = Spritesheet('sword')
+        self.weapons_spritesheet.load_sheet('assets/images/swords.png')
+        self.projectile_spritesheet = Spritesheet('fireball')
+        self.projectile_spritesheet.load_sheet('assets/images/fireball.png')
+        
         self.running = True
         self.enemyCollided = False
         self.blockCollided = False
@@ -106,7 +105,7 @@ class Game:
                 for i, sprite in enumerate(self.all_sprites):
                     sprite.rect.y -= PLAYER_STEPS
 
-    def main(self):
+    def run_game(self):
         while self.running:
             self.events()
             self.camera()
@@ -115,9 +114,7 @@ class Game:
 
 game = Game()
 game.create()
-
-while game.running:
-    game.main()
+game.run_game()
 
 pygame.quit()
 sys.exit()

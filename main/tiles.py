@@ -28,7 +28,7 @@ class Block(MapTile):
     def __init__(self, game, x, y):
         super().__init__(game, x, y, False, True)
 
-        self.image = self.game.terrain_spritesheet.get_image(176, 46, self.width, self.height)
+        self.image = self.game.terrain_spritesheet.get_sprite(176, 46, self.width, self.height)
         self.rect = self.image.get_rect()
         self.rect.x = self.x
         self.rect.y = self.y
@@ -37,7 +37,7 @@ class Ground(MapTile):
     def __init__(self, game, x, y):
         super().__init__(game, x, y, True, False)
 
-        self.image = self.game.terrain_spritesheet.get_image(86, 7, self.width, self.height)
+        self.image = self.game.terrain_spritesheet.get_sprite(86, 7, self.width, self.height)
         self.rect = self.image.get_rect()
         self.rect.x = self.x
         self.rect.y = self.y
@@ -46,7 +46,7 @@ class Tree(MapTile):
     def __init__(self, game, x, y):
         super().__init__(game, x, y, True, True)
 
-        self.image = self.game.terrain_spritesheet.get_image(111, 64, 16, 16)
+        self.image = self.game.terrain_spritesheet.get_sprite(111, 64, 16, 16)
         self.image = pygame.transform.scale(self.image, (TILESIZE, TILESIZE))
         self.rect = self.image.get_rect()
         self.rect.x = self.x
@@ -57,9 +57,9 @@ class Cliff(MapTile):
         super().__init__(game, x, y, True, True)
 
         if edge:
-            self.image = self.game.terrain_spritesheet.get_image(0, 100, 10, 11)
+            self.image = self.game.terrain_spritesheet.get_sprite(0, 100, 10, 11)
         else:
-            self.image = self.game.terrain_spritesheet.get_image(0, 107, 10, 22)
+            self.image = self.game.terrain_spritesheet.get_sprite(0, 107, 10, 22)
 
         self.image = pygame.transform.scale(self.image, (TILESIZE, TILESIZE))
 
@@ -78,15 +78,15 @@ class Water(MapTile):
     def __init__(self, game, x, y):
         super().__init__(game, x, y, True, True)
 
-        self.image = self.game.terrain_spritesheet.get_image(48, 128, 16, 16)
+        self.image = self.game.terrain_spritesheet.get_sprite(48, 128, 16, 16)
         self.image = pygame.transform.scale(self.image, (TILESIZE, TILESIZE))
         self.rect = self.image.get_rect()
         self.rect.x = self.x
         self.rect.y = self.y
 
     def animation(self):
-        animate = [self.game.terrain_spritesheet.get_image(48, 128, 16, 16),
-                   self.game.terrain_spritesheet.get_image(64, 128, 16, 16)]
+        animate = [self.game.terrain_spritesheet.get_sprite(48, 128, 16, 16),
+                   self.game.terrain_spritesheet.get_sprite(64, 128, 16, 16)]
 
         for i in range(len(animate)):
             animate[i] = pygame.transform.scale(animate[i], (TILESIZE, TILESIZE))

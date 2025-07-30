@@ -2,6 +2,7 @@ import math
 import pygame
 from config import *
 from healthbar import *
+from spritesheet import *
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -17,17 +18,32 @@ class Player(pygame.sprite.Sprite):
         self.dx = 0
         self.dy = 0
 
-        self.image = self.game.player_spritesheet.get_image(30, 29, self.width, self.height)
+        self.image = self.game.player_spritesheet.get_sprite(30, 29, self.width, self.height)
         self.rect = self.image.get_rect()
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
+
         self.direction = "right"
         self.animationCounter = 0
+
         self.swordEquipped = False
         self.counter = 0
         self.coolDown = 20
         self.canShoot = True
+
         self.health = PLAYER_HEALTH
+
+        # Fetching character frames
+        spritesheet = Spritesheet('knight')
+        spritesheet.load_sheet('assets\images\player.png')
+        self.rightAnimation = []
+        spritesheet.parse_sprite('right', self.rightAnimation)
+        self.leftAnimation = []
+        spritesheet.parse_sprite('left', self.leftAnimation)
+        self.upAnimation = []
+        spritesheet.parse_sprite('up', self.upAnimation)
+        self.downAnimation = []
+        spritesheet.parse_sprite('down', self.downAnimation)
 
     def move(self):
         pressed = pygame.key.get_pressed()
@@ -76,54 +92,30 @@ class Player(pygame.sprite.Sprite):
         self.dy = 0
 
     def animation(self):
-        rightAnimation = [self.game.player_spritesheet.get_image(30, 29, self.width, self.height),
-                         self.game.player_spritesheet.get_image(130, 29, self.width, self.height),
-                         self.game.player_spritesheet.get_image(220, 29, self.width, self.height),
-                         self.game.player_spritesheet.get_image(320, 29, self.width, self.height),
-                         self.game.player_spritesheet.get_image(410, 29, self.width, self.height),
-                         self.game.player_spritesheet.get_image(500, 29, self.width, self.height),
-                         self.game.player_spritesheet.get_image(610, 29, self.width, self.height),
-                         self.game.player_spritesheet.get_image(705, 29, self.width, self.height)]
-        leftAnimation = [self.game.player_spritesheet.get_image(30, 29, self.width, self.height)]
-        upAnimation = [self.game.player_spritesheet.get_image(30, 29, self.width, self.height)]
-        downAnimation = [self.game.player_spritesheet.get_image(30, 29, self.width, self.height)]
+        currAnimation = None
+        change = None
         
         if self.direction == "right":
-            if self.dx == 0:
-                self.image = rightAnimation[0]
-            else:
-                self.image = rightAnimation[math.floor(self.animationCounter)]
-                self.animationCounter += 0.1
-
-                if self.animationCounter >= len(rightAnimation):
-                    self.animationCounter = 0
+            currAnimation = self.rightAnimation
+            change = self.dx
         elif self.direction == "left":
-            if self.dx == 0:
-                self.image = leftAnimation[0]
-            else:
-                self.image = leftAnimation[math.floor(self.animationCounter)]
-                self.animationCounter += 0.1
-
-                if self.animationCounter >= len(leftAnimation):
-                    self.animationCounter = 0
+            currAnimation = self.leftAnimation
+            change = self.dx
         elif self.direction == "up":
-            if self.dy == 0:
-                self.image = upAnimation[0]
-            else:
-                self.image = upAnimation[math.floor(self.animationCounter)]
-                self.animationCounter += 0.1
-
-                if self.animationCounter >= len(upAnimation):
-                    self.animationCounter = 0
+            currAnimation = self.upAnimation
+            change = self.dy
         elif self.direction == "down":
-            if self.dy == 0:
-                self.image = downAnimation[0]
-            else:
-                self.image = downAnimation[math.floor(self.animationCounter)]
-                self.animationCounter += 0.1
+            currAnimation = self.downAnimation
+            self.dy
+        
+        if change == 0:
+            self.image = currAnimation[0]
+        else:
+            self.image = currAnimation[math.floor(self.animationCounter)]
+            self.animationCounter += 0.15
 
-                if self.animationCounter >= len(downAnimation):
-                    self.animationCounter = 0
+            if self.animationCounter >= len(currAnimation):
+                self.animationCounter = 0
 
 
     def collide_blocks(self):
@@ -164,7 +156,6 @@ class Player(pygame.sprite.Sprite):
         collide = pygame.sprite.spritecollide(self, self.game.weapons, True)
         
         if collide:
-            print("got weapon")
             self.swordEquipped = True
 
     def shoot_fireball(self):
