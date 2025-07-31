@@ -4,7 +4,7 @@ import json
 class Spritesheet:
     def __init__(self, character):
         self.character = character
-        
+
         with open("assets/sprites.json") as f:
             self.data = json.load(f)
         f.close()

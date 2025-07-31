@@ -6,31 +6,23 @@ from weapons import *
 from spritesheet import *
 import sys
 import pygame
-import scipy.io.wavfile as wavfile
+import scipy.io.wavfile as wav
 import sounddevice as sd
 import os
 
 class Game:
     def __init__(self):
+        pygame.init()
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
-        pygame.display.set_caption('Super Cool Game')
+        self.font = pygame.font.Font('assets/fonts/pixel.ttf', 30)
+        pygame.display.set_caption('Land of Lost')
         self.clock = pygame.time.Clock()
 
-        # Creating Spritesheet objects
-        self.terrain_spritesheet = Spritesheet('terrain')
-        self.terrain_spritesheet.load_sheet('assets/images/overworld.png')
-        self.player_spritesheet = Spritesheet('knight')
-        self.player_spritesheet.load_sheet('assets/images/player.png')
-        self.enemy_spritesheet = Spritesheet('slime_green')
-        self.enemy_spritesheet.load_sheet('assets/images/slime_green.png')
-        self.weapons_spritesheet = Spritesheet('sword')
-        self.weapons_spritesheet.load_sheet('assets/images/swords.png')
-        self.projectile_spritesheet = Spritesheet('fireball')
-        self.projectile_spritesheet.load_sheet('assets/images/fireball.png')
-        
         self.running = True
         self.enemyCollided = False
         self.blockCollided = False
+        self.score = 0
+        self.gold = 0
     
     def createTileMap(self):
         for i, row in enumerate(tilemap):
@@ -49,25 +41,39 @@ class Game:
                     Tree(self, j, i)
                 elif column == 'S':
                     Weapon(self, j, i)
-                elif column == 'B':
-                    if j < ISLAND_SIDE_EDGE and i < ISLAND_TB_EDGE:
-                        Cliff(self, j, i, "left", True)
-                    elif j >= len(tilemap[0]) - ISLAND_SIDE_EDGE and i < ISLAND_TB_EDGE:
-                        Cliff(self, j, i, "up", True)
-                    elif j >= len(tilemap[0]) - ISLAND_SIDE_EDGE and i >= len(tilemap) - ISLAND_TB_EDGE:
-                        Cliff(self, j, i, "right", True)
-                    elif j < ISLAND_SIDE_EDGE and i >= len(tilemap) - ISLAND_TB_EDGE:
-                        Cliff(self, j, i, "down", True)
-                    elif j < ISLAND_SIDE_EDGE:
-                        Cliff(self, j, i, "left", False)
-                    elif j >= len(tilemap[0]) - ISLAND_SIDE_EDGE:
-                        Cliff(self, j, i, "right", False)
-                    elif i < ISLAND_TB_EDGE:
-                        Cliff(self, j, i, "up", False)
-                    elif i >= len(tilemap) - ISLAND_TB_EDGE:
-                        Cliff(self, j, i, "down", False)
+                elif column == 'C':
+                    Coin(self, j, i)
+                elif column == 'F':
+                    Fruit(self, j, i)
+                elif column == 'B' or column == '.':
+                    edge = False
+                    side = 'ground'
+
+                    if j > 0 and tilemap[i][j - 1] == 'W':
+                        side = 'left'
+                        if i > 0 and tilemap[i - 1][j] == 'W': # up-left
+                            edge = True
+                        elif i < len(tilemap) - 1 and tilemap[i + 1][j] == 'W': # down-left
+                            side = 'down'
+                            edge = True
+                    elif j < len(tilemap[0]) - 1 and tilemap[i][j + 1] == 'W':
+                        side = 'right'
+                        if i < len(tilemap) - 1 and tilemap[i + 1][j] == 'W': # down-right
+                            edge = True
+                        elif i > 0 and tilemap[i - 1][j] == 'W': # up-right
+                            side = 'up'
+                            edge = True
+                    elif i > 0 and tilemap[i - 1][j] == 'W':
+                        side = 'up'
+                    elif i < len(tilemap) - 1 and tilemap[i + 1][j] == 'W':
+                        side = 'down'
+                    
+                    if side != 'ground':
+                        Cliff(self, j, i, side, edge)
+
 
     def create(self):
+        # Layers
         self.all_sprites = pygame.sprite.LayeredUpdates()
         self.blocks = pygame.sprite.LayeredUpdates()
         self.enemies = pygame.sprite.LayeredUpdates()
@@ -75,6 +81,25 @@ class Game:
         self.weapons = pygame.sprite.LayeredUpdates()
         self.projectiles = pygame.sprite.LayeredUpdates()
         self.healthbars = pygame.sprite.LayeredUpdates()
+        self.coins = pygame.sprite.LayeredUpdates()
+        self.fruits = pygame.sprite.LayeredUpdates()
+
+        # Spritesheets
+        self.terrain_spritesheet = Spritesheet('terrain')
+        self.terrain_spritesheet.load_sheet('assets/images/overworld.png')
+        self.player_spritesheet = Spritesheet('knight')
+        self.player_spritesheet.load_sheet('assets/images/player.png')
+        self.enemy_spritesheet = Spritesheet('slime_green')
+        self.enemy_spritesheet.load_sheet('assets/images/slime_green.png')
+        self.weapons_spritesheet = Spritesheet('sword')
+        self.weapons_spritesheet.load_sheet('assets/images/swords.png')
+        self.projectile_spritesheet = Spritesheet('fireball')
+        self.projectile_spritesheet.load_sheet('assets/images/fireball.png')
+        self.coin_spritesheet = Spritesheet('coin')
+        self.coin_spritesheet.load_sheet('assets/images/coin.png')
+        self.fruit_spritesheet = Spritesheet('fruit')
+        self.fruit_spritesheet.load_sheet('assets/images/fruit.png')
+
         self.createTileMap()
 
     def update(self):
@@ -89,6 +114,19 @@ class Game:
         self.screen.fill(OCEAN)
         self.all_sprites.draw(self.screen) 
         self.clock.tick(FPS)
+
+        # Displays score
+        txt = self.font.render('score: ' + str(self.score), True, 'black')
+        self.screen.blit(txt, (SCORE_X, SCORE_Y))
+
+        # Display gold
+        txt = self.font.render(str(self.gold), True, 'black')
+        self.screen.blit(txt, (GOLD_X, GOLD_Y))
+        gold_img = []
+        self.coin_spritesheet.parse_sprite('idle', gold_img)
+        gold_img = pygame.transform.scale(gold_img[0], (TILESIZE, TILESIZE))
+        self.screen.blit(gold_img, (GOLD_X - TILESIZE * 1.1, GOLD_Y))
+
         pygame.display.update()
 
     def camera(self):
@@ -111,8 +149,7 @@ class Game:
     def play_sound(self, filename):
         script_dir = os.path.dirname(__file__)
         file_path = os.path.join(script_dir, '..', 'assets', 'sounds', filename)
-
-        sample_rate, data = wavfile.read(file_path)
+        sample_rate, data = wav.read(file_path)
         sd.play(data, samplerate=sample_rate)
 
     def run_game(self):

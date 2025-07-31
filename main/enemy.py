@@ -37,11 +37,6 @@ class Enemy(pygame.sprite.Sprite):
         self.shootState = 'halt'
 
         # Loading sprite frames
-        # rightAnimation = []
-        # self.game.enemy_spritesheet.parse_sprite('right', rightAnimation)
-        # leftAnimation = [pygame.transform.flip(self.game.enemy_spritesheet.get_sprite(31, 72, self.width, self.height), True, False)]
-        # upAnimation = [self.game.enemy_spritesheet.get_sprite(160, 41, self.width, self.height)]
-        # downAnimation = [self.game.enemy_spritesheet.get_sprite(31, 38, self.width, self.height)]
         self.rightAnimation = []
         self.game.enemy_spritesheet.parse_sprite('right', self.rightAnimation)
         self.upAnimation = []
@@ -170,6 +165,7 @@ class Enemy(pygame.sprite.Sprite):
         self.health = self.health - amount
 
         if self.health <= 0:
+            self.game.score += ENEMY_KILL_POINTS
             self.kill()
             self.healthbar.kill()
         else:

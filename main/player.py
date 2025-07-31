@@ -18,7 +18,17 @@ class Player(pygame.sprite.Sprite):
         self.dx = 0
         self.dy = 0
 
-        self.image = self.game.player_spritesheet.get_sprite(30, 29, self.width, self.height)
+        # Fetching character frames
+        self.rightAnimation = []
+        self.game.player_spritesheet.parse_sprite('right', self.rightAnimation)
+        self.leftAnimation = []
+        self.game.player_spritesheet.parse_sprite('left', self.leftAnimation)
+        self.upAnimation = []
+        self.game.player_spritesheet.parse_sprite('up', self.upAnimation)
+        self.downAnimation = []
+        self.game.player_spritesheet.parse_sprite('down', self.downAnimation)
+
+        self.image = self.rightAnimation[0]
         self.rect = self.image.get_rect()
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
@@ -32,18 +42,6 @@ class Player(pygame.sprite.Sprite):
         self.canShoot = True
 
         self.health = PLAYER_HEALTH
-
-        # Fetching character frames
-        spritesheet = Spritesheet('knight')
-        spritesheet.load_sheet('assets\images\player.png')
-        self.rightAnimation = []
-        spritesheet.parse_sprite('right', self.rightAnimation)
-        self.leftAnimation = []
-        spritesheet.parse_sprite('left', self.leftAnimation)
-        self.upAnimation = []
-        spritesheet.parse_sprite('up', self.upAnimation)
-        self.downAnimation = []
-        spritesheet.parse_sprite('down', self.downAnimation)
 
     def move(self):
         pressed = pygame.key.get_pressed()
@@ -85,6 +83,8 @@ class Player(pygame.sprite.Sprite):
         self.collide_blocks()
         self.collide_enemies()
         self.collide_weapon()
+        self.collide_coin()
+        self.collide_fruit()
         self.shoot_fireball()
         self.shootCooldown()
 
@@ -158,6 +158,20 @@ class Player(pygame.sprite.Sprite):
         if collide:
             self.swordEquipped = True
             self.game.play_sound("power_up.wav")
+    
+    def collide_coin(self):
+        collide = pygame.sprite.spritecollide(self, self.game.coins, True)
+        
+        if collide:
+            self.game.play_sound("coin.wav")
+            self.game.gold += 1
+    
+    def collide_fruit(self):
+        collide = pygame.sprite.spritecollide(self, self.game.fruits, True)
+
+        if collide:
+            self.game.play_sound("tap.wav")
+            self.damage(-FRUIT_HEAL)
 
     def shoot_fireball(self):
         pressed = pygame.key.get_pressed()
@@ -176,8 +190,12 @@ class Player(pygame.sprite.Sprite):
                 self.canShoot = True
 
     def damage(self, amount):
+        if self.health - amount > PLAYER_HEALTH:
+            self.health = PLAYER_HEALTH
+        else:
+            self.health -= amount
+        
         self.game.play_sound("hurt.wav")
-        self.health -= amount
         self.healthbar.damage(PLAYER_HEALTH, self.health)
 
         if self.health <= 0:

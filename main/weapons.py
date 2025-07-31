@@ -2,6 +2,7 @@ import math
 from tiles import *
 from config import *
 import pygame
+import random
 
 class Weapon(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -34,6 +35,71 @@ class Weapon(pygame.sprite.Sprite):
         
         self.image = animate[math.floor(self.animationCounter)]
         self.animationCounter += 0.05
+
+    def update(self):
+        self.animation()
+
+class Coin(pygame.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.game = game
+        self._layer = PLAYER_LAYER
+        self.groups = self.game.all_sprites, self.game.coins
+        pygame.sprite.Sprite.__init__(self, self.groups)
+        
+        self.x = x * TILESIZE
+        self.y = y * TILESIZE
+
+        self.width = TILESIZE
+        self.height = TILESIZE
+
+        self.animationCounter = 0
+        self.animate = []
+        self.game.coin_spritesheet.parse_sprite('idle', self.animate)
+        for i in range(len(self.animate)):
+            self.animate[i] = pygame.transform.scale(self.animate[i], (TILESIZE, TILESIZE))
+
+        self.image = self.animate[0]
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y
+    
+    def animation(self):
+        if self.animationCounter >= len(self.animate):
+            self.animationCounter = 0
+        
+        self.image = self.animate[math.floor(self.animationCounter)]
+        self.animationCounter += 0.05
+
+    def update(self):
+        self.animation()
+
+class Fruit(pygame.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.game = game
+        self._layer = PLAYER_LAYER
+        self.groups = self.game.all_sprites, self.game.fruits
+        pygame.sprite.Sprite.__init__(self, self.groups)
+        
+        self.x = x * TILESIZE
+        self.y = y * TILESIZE
+
+        self.width = TILESIZE
+        self.height = TILESIZE
+
+        fruit = random.choice(['apple', 'pear', 'grapes'])
+        self.animationCounter = 0
+        self.animate = []
+        self.game.fruit_spritesheet.parse_sprite(fruit, self.animate)
+        for i in range(len(self.animate)):
+            self.animate[i] = pygame.transform.scale(self.animate[i], (TILESIZE, TILESIZE))
+
+        self.image = random.choice(self.animate)
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y
+    
+    def animation(self):
+        pass
 
     def update(self):
         self.animation()

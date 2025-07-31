@@ -53,10 +53,10 @@ class Tree(MapTile):
         self.rect.y = self.y
 
 class Cliff(MapTile):
-    def __init__(self, game, x, y, orientation, edge):
+    def __init__(self, game, x, y, orientation, corner):
         super().__init__(game, x, y, True, True)
 
-        if edge:
+        if corner:
             self.image = self.game.terrain_spritesheet.get_sprite(0, 100, 10, 11)
         else:
             self.image = self.game.terrain_spritesheet.get_sprite(0, 107, 10, 22)
