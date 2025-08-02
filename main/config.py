@@ -5,6 +5,21 @@ WIN_WIDTH = 35 * TILESIZE
 WIN_HEIGHT = 20 * TILESIZE
 FPS = 60
 
+# Buttons
+BTN_WIDTH = 100
+BTN_HEIGHT = 30
+BTN_X = WIN_WIDTH / 2 - BTN_WIDTH / 2
+PLAY_BTN_Y = WIN_HEIGHT / 3
+LEAD_BTN_Y = PLAY_BTN_Y + 2 * BTN_HEIGHT
+
+# Leaderboard
+NAME_X = WIN_WIDTH / 5
+POINTS_X = WIN_WIDTH / 6 * 4
+NAME_Y = WIN_HEIGHT / 4
+BACK_BTN_WIDTH = 28
+BACK_BTN_X = WIN_WIDTH - 100 - BACK_BTN_WIDTH
+BACK_BTN_Y = 100
+
 # Positions
 SCORE_X = WIN_WIDTH - 4 * TILESIZE
 SCORE_Y = TILESIZE / 2
@@ -12,6 +27,7 @@ GOLD_X = SCORE_X - 2 * TILESIZE
 GOLD_Y = SCORE_Y
 
 # Game Variables
+TITLE = "Land of Lost"
 PLAYER_LAYER = 5
 ENEMY_LAYER = 3
 BLOCKS_LAYER = 2
@@ -53,6 +69,8 @@ ENEMY_KILL_POINTS = 1
 |   C    | coin                                          |
 |   F    | fruit                                         |
 '''
+
+# Maps
 tilemap = [
     'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
     'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
@@ -95,7 +113,7 @@ tilemap = [
     'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW'
 ]
 
-tilemapTest = ['WBBBBBBBBBBW',
+mapTest = ['WBBBBBBBBBBW',
            'BWWWWWWWWWWB',
            'BWBBBBBBBBWB',
            'BWB...P..BWB',
@@ -104,7 +122,9 @@ tilemapTest = ['WBBBBBBBBBBW',
            'WBBBBBBBBBBW'
            ]
 
+# Colours
 BLACK = (0, 0, 0)
 OCEAN = (55, 138, 209)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
+GREY = (210, 211, 210)
