@@ -51,6 +51,18 @@ class Tree(MapTile):
         self.rect = self.image.get_rect()
         self.rect.x = self.x
         self.rect.y = self.y
+    
+class Bridge(MapTile):
+    def __init__(self, game, x, y, frame, turn):
+        super().__init__(game, x, y, True, False)
+
+        frames = []
+        self.game.terrain_spritesheet.parse_sprite('building', 'bridge', frames)
+        self.image = pygame.transform.scale(frames[frame], (TILESIZE, TILESIZE))
+        self.image = pygame.transform.rotate(self.image, turn)
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y
 
 class Cliff(MapTile):
     def __init__(self, game, x, y, orientation, corner):

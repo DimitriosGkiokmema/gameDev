@@ -16,9 +16,6 @@ class HealthBar(pygame.sprite.Sprite):
         self.width = TILESIZE
         self.height = 10
 
-        self.dx = 0
-        self.dy = 0
-
         self.image = pygame.Surface([self.width, self.height])
         self.image.fill(GREEN)
         self.rect = self.image.get_rect()
@@ -40,3 +37,39 @@ class HealthBar(pygame.sprite.Sprite):
     
     def update(self):
         self.move()
+
+class ManaBar(pygame.sprite.Sprite):
+    def __init__(self, game):
+        self.game = game
+        self._layer = HEALTH_LAYER
+        self.groups = self.game.all_sprites, self.game.healthbars
+        pygame.sprite.Sprite.__init__(self, self.groups)
+
+        self.width = MANA_BAR_WIDTH
+        self.height = MANA_BAR_HEIGHT
+
+        self.image = pygame.Surface([self.width, self.height])
+        self.rect = self.image.get_rect()
+        self.rect.x = MANA_BAR_X
+        self.rect.y = MANA_BAR_Y
+        self.bar_level = self.rect.width
+        self.draw()
+
+    def move(self):
+        self.rect.x = MANA_BAR_X
+        self.rect.y = MANA_BAR_Y
+
+    def draw(self):
+        self.image.fill(DARK_RED)
+        pygame.draw.rect(self.image, MANA, (0, 0, self.bar_level, self.height), 0)
+        txt = self.game.font.render('Mana: ', True, 'white')
+        self.game.screen.blit(txt, (100, 0 + 100))
+
+    def damage(self, totalHealth, health):
+        self.bar_level = self.rect.width * health / totalHealth
+        txt = self.game.font.render('Mana: ', True, 'white')
+        self.game.screen.blit(txt, (100, 0 + 100))
+    
+    def update(self):
+        self.move()
+        self.draw()

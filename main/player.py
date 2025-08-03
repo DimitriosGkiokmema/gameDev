@@ -20,13 +20,13 @@ class Player(pygame.sprite.Sprite):
 
         # Fetching character frames
         self.rightAnimation = []
-        self.game.player_spritesheet.parse_sprite('right', self.rightAnimation)
+        self.game.player_spritesheet.parse_sprite('knight', 'right', self.rightAnimation)
         self.leftAnimation = []
-        self.game.player_spritesheet.parse_sprite('left', self.leftAnimation)
+        self.game.player_spritesheet.parse_sprite('knight', 'left', self.leftAnimation)
         self.upAnimation = []
-        self.game.player_spritesheet.parse_sprite('up', self.upAnimation)
+        self.game.player_spritesheet.parse_sprite('knight', 'up', self.upAnimation)
         self.downAnimation = []
-        self.game.player_spritesheet.parse_sprite('down', self.downAnimation)
+        self.game.player_spritesheet.parse_sprite('knight', 'down', self.downAnimation)
 
         self.image = self.rightAnimation[0]
         self.rect = self.image.get_rect()
@@ -42,6 +42,9 @@ class Player(pygame.sprite.Sprite):
         self.canShoot = True
 
         self.health = PLAYER_HEALTH
+        self.curr_mana = PLAYER_MANA_CAP
+        self.mana_reg_limit = PLAYER_MANA_REG_SPEED
+        self.mana_reg_counter = 0
 
     def move(self):
         pressed = pygame.key.get_pressed()
@@ -77,6 +80,7 @@ class Player(pygame.sprite.Sprite):
 
     def update(self):
         self.move()
+        self.mana()
         self.animation()
         self.rect.x += self.dx
         self.rect.y += self.dy
@@ -90,6 +94,16 @@ class Player(pygame.sprite.Sprite):
 
         self.dx = 0
         self.dy = 0
+
+    def mana(self):
+        self.mana_reg_counter += 1
+
+        if self.mana_reg_counter >= self.mana_reg_limit:
+            self.mana_reg_counter = 0
+
+            if self.curr_mana < PLAYER_MANA_CAP:
+                self.curr_mana += 1
+                self.mana_bar.damage(PLAYER_MANA_CAP, self.curr_mana)
 
     def animation(self):
         currAnimation = None
@@ -158,6 +172,7 @@ class Player(pygame.sprite.Sprite):
         if collide:
             self.swordEquipped = True
             self.game.play_sound("power_up.wav")
+            self.mana_bar = ManaBar(self.game)
     
     def collide_coin(self):
         collide = pygame.sprite.spritecollide(self, self.game.coins, True)
@@ -176,10 +191,12 @@ class Player(pygame.sprite.Sprite):
     def shoot_fireball(self):
         pressed = pygame.key.get_pressed()
 
-        if self.swordEquipped and self.canShoot:
+        if self.swordEquipped and self.canShoot and self.curr_mana > 0:
             if pressed[pygame.K_SPACE]:
                 Projectile(self.game, self.rect.x, self.rect.y, "player", True)
                 self.canShoot = False
+                self.curr_mana -= 1
+                self.mana_bar.damage(PLAYER_MANA_CAP, self.curr_mana)
     
     def shootCooldown(self):
         if not self.canShoot:

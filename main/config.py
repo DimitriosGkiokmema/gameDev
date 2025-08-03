@@ -25,9 +25,12 @@ SCORE_X = WIN_WIDTH - 4 * TILESIZE
 SCORE_Y = TILESIZE / 2
 GOLD_X = SCORE_X - 2 * TILESIZE
 GOLD_Y = SCORE_Y
+MANA_BAR_X = WIN_WIDTH / 2 - 4 * TILESIZE
+MANA_BAR_Y = SCORE_Y
 
 # Game Variables
 TITLE = "Land of Lost"
+# Layers
 PLAYER_LAYER = 5
 ENEMY_LAYER = 3
 BLOCKS_LAYER = 2
@@ -35,19 +38,24 @@ GROUND_LAYER = 1
 HEALTH_LAYER = 6
 WEAPON_LAYER = 4
 
+# Speed
 PLAYER_STEPS = 3
 ENEMY_STEPS = 1
 PROJECTILE_STEPS = 5
 
-ISLAND_SIDE_EDGE = 2
-ISLAND_TB_EDGE = 3
-
+# Health
 PLAYER_HEALTH = 10
 ENEMY_HEALTH = 6
 FRUIT_HEAL = 1
-
 PROJECTILE_DAMAGE = 1
 
+# Mana
+PLAYER_MANA_CAP = 5
+PLAYER_MANA_REG_SPEED = FPS * 2
+MANA_BAR_HEIGHT = TILESIZE / 2
+MANA_BAR_WIDTH = 8 * TILESIZE
+
+# Ranges
 ENEMY_DETECTION_RANGE = 10
 
 # Points
@@ -65,7 +73,7 @@ ENEMY_KILL_POINTS = 1
 |   H    | building (restaurant, house)                  |
 |   P    | player start                                  |
 |   E    | enemy                                         |
-|   S    | sword                                         |
+|   S    | fireball                                      |
 |   C    | coin                                          |
 |   F    | fruit                                         |
 '''
@@ -74,41 +82,31 @@ ENEMY_KILL_POINTS = 1
 tilemap = [
     'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
     'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
-    'WBBBBBBBBBBBBBBBBBWWWWBBBBBBBBBBBBBBBBBW',
-    'WB.................WWW................BW',
-    'WB......E......F....WW................BW',
-    'WB...................WW...............BW',
-    'WBB.................WWWW..............BW',
-    'WWWB...S.......P....WWWW..............BW',
-    'WWWB....MMMMM.......WWWW..............BW',
-    'WBB.....MMMMM.........................BW',
-    'WB......MMMMM............E............BW',
-    'WB....................................BW',
-    'WB..E.......H.........................BW',
-    'WB...................C................BW',
-    'WB......F.............................BW',
-    'WB....................................BW',
-    'WB....................................BW',
-    'WB...T.........................F......BW',
-    'WB...TT................S..............BW',
-    'WB...TTT..............................BW',
-    'WB...TTTTT............................BW',
-    'WB...TTTTT............................BW',
-    'WB...TTTT.............................BW',
-    'WB...TT...............................BW',
-    'WB...TT...............F...............BW',
-    'WB...T........................H.......BW',
-    'WB....................................BW',
-    'WB....................................BW',
-    'WB.............E......................BW',
-    'WB.....F..............................BW',
-    'WB....................E...............BW',
-    'WB....................................BW',
-    'WB....................................BW',
-    'WB..................W...........F.....BW',
-    'WB.................WWW................BW',
-    'WB................WWWWW...............BW',
-    'WBBBBBBBBBBBBBBBBBWWWWWBBBBBBBBBBBBBBBBW',
+    'WWWWWWWW..........WWWW..............WWWW',
+    'WWWWWW.............WWW...............WWW',
+    'W.......E......F....WW.................W',
+    'W...................WWW................W',
+    'W...................WWWW...............W',
+    'WWW............P...WWWWW...............W',
+    'WWW......M.........WWWWW...............W',
+    'W.......MMM......................T.....W',
+    'W........M...............E......TTT....W',
+    'W...E.......H..................TTT.....W',
+    'W....................C.........T.......W',
+    'W.......F..............................W',
+    'W....T.........................F......BBBBBBB',
+    'W....TT................S..............BBBBBBB',
+    'W....TTT...............................W',
+    'W....TTTTT......F......................W',
+    'W....TTTTT.............................W',
+    'W....TTTT..............................W',
+    'W....TT......................W.........W',
+    'W....TT........E......F.....WWW........W',
+    'W....T.......................W.........W',
+    'W...................W...........F......W',
+    'W..................WWW..............WWWW',
+    'WWW...............WWWWW..........WWWWWWW',
+    'WWWWWW............WWWWW......WWWWWWWWWWW',
     'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
     'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW'
 ]
@@ -128,3 +126,5 @@ OCEAN = (55, 138, 209)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 GREY = (210, 211, 210)
+MANA = (248, 245, 235)
+DARK_RED = (166, 4, 4)

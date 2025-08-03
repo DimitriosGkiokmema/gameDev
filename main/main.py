@@ -23,7 +23,8 @@ class Game:
         self.buttons = []
 
         self.running = True
-        self.game_state = 'main menu'
+        # self.game_state = 'main menu'
+        self.game_state = 'Play'
         self.enemyCollided = False
         self.blockCollided = False
         self.score = 0
@@ -50,7 +51,9 @@ class Game:
                     Coin(self, j, i)
                 elif column == 'F':
                     Fruit(self, j, i)
-                elif column == 'B' or column == '.':
+                elif column == 'B':
+                    Bridge(self, j, i, 1, 90)
+                else:
                     edge = False
                     side = 'ground'
 
@@ -76,7 +79,6 @@ class Game:
                     if side != 'ground':
                         Cliff(self, j, i, side, edge)
 
-
     def create(self):
         # Layers
         self.all_sprites = pygame.sprite.LayeredUpdates()
@@ -90,22 +92,15 @@ class Game:
         self.fruits = pygame.sprite.LayeredUpdates()
 
         # Spritesheets
-        self.terrain_spritesheet = Spritesheet('terrain')
-        self.terrain_spritesheet.load_sheet('assets/images/overworld.png')
-        self.player_spritesheet = Spritesheet('knight')
-        self.player_spritesheet.load_sheet('assets/images/player.png')
-        self.enemy_spritesheet = Spritesheet('slime_green')
-        self.enemy_spritesheet.load_sheet('assets/images/slime_green.png')
-        self.weapons_spritesheet = Spritesheet('sword')
-        self.weapons_spritesheet.load_sheet('assets/images/swords.png')
-        self.projectile_spritesheet = Spritesheet('fireball')
-        self.projectile_spritesheet.load_sheet('assets/images/fireball.png')
-        self.coin_spritesheet = Spritesheet('coin')
-        self.coin_spritesheet.load_sheet('assets/images/coin.png')
-        self.fruit_spritesheet = Spritesheet('fruit')
-        self.fruit_spritesheet.load_sheet('assets/images/fruit.png')
+        self.terrain_spritesheet = Spritesheet('overworld.png')
+        self.player_spritesheet = Spritesheet('player.png')
+        self.enemy_spritesheet = Spritesheet('slime_green.png')
+        self.weapons_spritesheet = Spritesheet('swords.png')
+        self.projectile_spritesheet = Spritesheet('fireball.png')
+        self.coin_spritesheet = Spritesheet('coin.png')
+        self.fruit_spritesheet = Spritesheet('fruit.png')
 
-        self.createTileMap()
+        self.createTileMap() 
 
     def update(self):
         self.all_sprites.update()
@@ -144,9 +139,14 @@ class Game:
         txt = self.font.render(str(self.gold), True, 'black')
         self.screen.blit(txt, (GOLD_X, GOLD_Y))
         gold_img = []
-        self.coin_spritesheet.parse_sprite('idle', gold_img)
+        self.coin_spritesheet.parse_sprite('coin', 'idle', gold_img)
         gold_img = pygame.transform.scale(gold_img[0], (TILESIZE, TILESIZE))
         self.screen.blit(gold_img, (GOLD_X - TILESIZE * 1.1, GOLD_Y))
+
+        # Display 'Mana:'
+        if self.player.swordEquipped:
+            txt = self.font.render('Mana: ', True, 'black')
+            self.screen.blit(txt, (MANA_BAR_X, MANA_BAR_Y - 8))
 
     def draw_main_menu(self):
         self.screen.fill(OCEAN)

@@ -38,9 +38,9 @@ class Enemy(pygame.sprite.Sprite):
 
         # Loading sprite frames
         self.rightAnimation = []
-        self.game.enemy_spritesheet.parse_sprite('right', self.rightAnimation)
+        self.game.enemy_spritesheet.parse_sprite('slime_green', 'right', self.rightAnimation)
         self.upAnimation = []
-        self.game.enemy_spritesheet.parse_sprite('up', self.upAnimation)
+        self.game.enemy_spritesheet.parse_sprite('slime_green', 'up', self.upAnimation)
 
         self.leftAnimation = []
         for frame in self.rightAnimation:

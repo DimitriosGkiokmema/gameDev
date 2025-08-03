@@ -17,24 +17,15 @@ class Weapon(pygame.sprite.Sprite):
         self.width = TILESIZE
         self.height = TILESIZE
 
-        self.image = self.game.terrain_spritesheet.get_sprite(48, 128, 100, 100)
+        self.image = self.game.projectile_spritesheet.get_sprite(0, 0, 100, 100)
+        self.image = pygame.transform.scale(self.image, (TILESIZE, TILESIZE))
         self.rect = self.image.get_rect()
         self.rect.x = self.x
         self.rect.y = self.y
         self.animationCounter = 0
     
     def animation(self):
-        animate = [self.game.weapons_spritesheet.get_sprite(171, 273, 205, 390),
-                   self.game.weapons_spritesheet.get_sprite(465, 800, 260, 570)]
-
-        for i in range(len(animate)):
-            animate[i] = pygame.transform.scale(animate[i], (TILESIZE, TILESIZE))
-
-        if self.animationCounter >= len(animate):
-            self.animationCounter = 0
-        
-        self.image = animate[math.floor(self.animationCounter)]
-        self.animationCounter += 0.05
+        pass
 
     def update(self):
         self.animation()
@@ -54,7 +45,7 @@ class Coin(pygame.sprite.Sprite):
 
         self.animationCounter = 0
         self.animate = []
-        self.game.coin_spritesheet.parse_sprite('idle', self.animate)
+        self.game.coin_spritesheet.parse_sprite('coin', 'idle', self.animate)
         for i in range(len(self.animate)):
             self.animate[i] = pygame.transform.scale(self.animate[i], (TILESIZE, TILESIZE))
 
@@ -89,7 +80,7 @@ class Fruit(pygame.sprite.Sprite):
         fruit = random.choice(['apple', 'pear', 'grapes'])
         self.animationCounter = 0
         self.animate = []
-        self.game.fruit_spritesheet.parse_sprite(fruit, self.animate)
+        self.game.fruit_spritesheet.parse_sprite('fruit', fruit, self.animate)
         for i in range(len(self.animate)):
             self.animate[i] = pygame.transform.scale(self.animate[i], (TILESIZE, TILESIZE))
 
@@ -122,12 +113,20 @@ class Projectile(pygame.sprite.Sprite):
         self.damage = PROJECTILE_DAMAGE
         self.isPlayer = isPlayer
 
+        self.framesCurr = 0
+        self.framesMax = FPS
+
         if (direction == "player"):
             self.direction = self.game.player.direction
         else:
             self.direction = direction
     
     def move(self):
+        self.framesCurr += 1
+
+        if self.framesCurr >= self.framesMax:
+            self.kill()
+
         if self.direction == "right":
             self.rect.x += PROJECTILE_STEPS
         elif self.direction == "left":
@@ -135,7 +134,7 @@ class Projectile(pygame.sprite.Sprite):
         elif self.direction == "up":
             self.rect.y -= PROJECTILE_STEPS
         elif self.direction == "down":
-            self.rect.y += PROJECTILE_STEPS   
+            self.rect.y += PROJECTILE_STEPS
 
     def update(self):
         self.move()
