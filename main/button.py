@@ -4,6 +4,7 @@ from config import *
 class Button():
     def __init__(self, game, x, y, height, width, state, txt):
         self.game = game
+        self.game.buttons.append(self)
         self.rect = pygame.Rect(x, y, width, height)
         self.rect.topleft = (x, y)
         self.state = state
@@ -22,4 +23,10 @@ class Button():
         if event.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             if self.rect.collidepoint(pos):
-                self.game.game_state = self.state
+                if self.state == 'UNPAUSE':
+                    self.game.paused = False
+                else:
+                    self.game.game_state = self.state
+                
+                if self.txt == 'Quit':
+                    self.game.paused = False
