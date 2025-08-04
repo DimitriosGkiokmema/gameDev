@@ -30,3 +30,5 @@ class Button():
                 
                 if self.txt == 'Quit':
                     self.game.paused = False
+                
+                self.game.buttons = []

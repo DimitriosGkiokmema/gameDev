@@ -43,6 +43,7 @@ class Player(pygame.sprite.Sprite):
 
         self.health = PLAYER_HEALTH
         self.curr_mana = PLAYER_MANA_CAP
+        self.max_mana = PLAYER_MANA_CAP
         self.mana_reg_limit = PLAYER_MANA_REG_SPEED
         self.mana_reg_counter = 0
 
@@ -101,9 +102,9 @@ class Player(pygame.sprite.Sprite):
         if self.mana_reg_counter >= self.mana_reg_limit:
             self.mana_reg_counter = 0
 
-            if self.curr_mana < PLAYER_MANA_CAP:
+            if self.curr_mana < self.max_mana:
                 self.curr_mana += 1
-                self.mana_bar.damage(PLAYER_MANA_CAP, self.curr_mana)
+                self.mana_bar.damage(self.max_mana, self.curr_mana)
 
     def animation(self):
         currAnimation = None
@@ -196,7 +197,7 @@ class Player(pygame.sprite.Sprite):
                 Projectile(self.game, self.rect.x, self.rect.y, "player", True)
                 self.canShoot = False
                 self.curr_mana -= 1
-                self.mana_bar.damage(PLAYER_MANA_CAP, self.curr_mana)
+                self.mana_bar.damage(self.max_mana, self.curr_mana)
     
     def shootCooldown(self):
         if not self.canShoot:

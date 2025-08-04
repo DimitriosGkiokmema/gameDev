@@ -168,5 +168,7 @@ class Enemy(pygame.sprite.Sprite):
             self.game.score += ENEMY_KILL_POINTS
             self.kill()
             self.healthbar.kill()
+            self.game.player.max_mana += 1
+            print('mana cap is now: ' + str(self.game.player.max_mana))
         else:
             self.healthbar.damage(ENEMY_HEALTH, self.health)
