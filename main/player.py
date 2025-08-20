@@ -92,6 +92,7 @@ class Player(pygame.sprite.Sprite):
         self.collide_fruit()
         self.shoot_fireball()
         self.shootCooldown()
+        self.cords_to_map()
 
         self.dx = 0
         self.dy = 0
@@ -220,3 +221,9 @@ class Player(pygame.sprite.Sprite):
             self.kill()
             self.healthbar.kill_healthbar()
             self.running = False
+
+    def cords_to_map(self):
+        sprite = list(self.game.all_sprites)[0]
+        x = ((-sprite.rect.x + self.rect.x) + TILESIZE // 2) // TILESIZE
+        y = ((-sprite.rect.y + self.rect.y) + TILESIZE // 2) // TILESIZE
+        return (y, x)

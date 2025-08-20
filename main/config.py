@@ -37,7 +37,7 @@ QUIT_Y = RESUME_Y + 2 * BTN_HEIGHT
 
 # Controls
 CONTROL_X = WIN_WIDTH / 2 - 35
-CONTROL_Y = WIN_HEIGHT / 4
+CONTROL_Y = WIN_HEIGHT / 3
 KEY_X = PAUSE_X + BTN_WIDTH
 KEY_Y = CONTROL_Y + 2 * BTN_HEIGHT
 
@@ -67,6 +67,7 @@ PROJECTILE_STEPS = 5
 # Health
 PLAYER_HEALTH = 10
 ENEMY_HEALTH = 6
+BOSS_HEALTH = ENEMY_HEALTH * 5
 FRUIT_HEAL = 1
 PROJECTILE_DAMAGE = 1
 
@@ -81,6 +82,7 @@ ENEMY_DETECTION_RANGE = 10
 
 # Points
 ENEMY_KILL_POINTS = 1
+BOSS_KILL_POINTS = 5
 
 '''
 | Symbol | Meaning                                       |
@@ -94,6 +96,7 @@ ENEMY_KILL_POINTS = 1
 |   H    | building (restaurant, house)                  |
 |   P    | player start                                  |
 |   E    | enemy                                         |
+|   Z    | boss                                          |
 |   S    | fireball                                      |
 |   C    | coin                                          |
 |   F    | fruit                                         |
@@ -101,35 +104,35 @@ ENEMY_KILL_POINTS = 1
 
 # Maps
 tilemap = [
-    'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
-    'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
-    'WWWWWWWW..........WWWW..............WWWW',
-    'WWWWWW.............WWW...............WWW',
-    'W.......E......F....WW.................W',
-    'W...................WWW................W',
-    'W...................WWWW...............W',
-    'WWW............P...WWWWW...............W',
-    'WWW......M.........WWWWW...............W',
-    'W.......MMM......................T.....W',
-    'W........M...............E......TTT....W',
-    'W...E.......H..................TTT.....W',
-    'W....................C.........T.......W',
-    'W.......F..............................W',
-    'W....T.........................F......BBBBBBB',
-    'W....TT................S..............BBBBBBB',
-    'W....TTT...............................W',
-    'W....TTTTT......F......................W',
-    'W....TTTTT.............................W',
-    'W....TTTT..............................W',
-    'W....TT......................W.........W',
-    'W....TT........E......F.....WWW........W',
-    'W....T.......................W.........W',
-    'W...................W...........F......W',
-    'W..................WWW..............WWWW',
-    'WWW...............WWWWW..........WWWWWWW',
-    'WWWWWW............WWWWW......WWWWWWWWWWW',
-    'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
-    'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW'
+    'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
+    'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
+    'WWWWWWWW..........WWWW..............WWWWWWWWWWWWWWWWWW.......WWWWW......WW...WWW',
+    'WWWWWW.............WWW...............WWWWWWWWWWWWWWWW.........WWW........W....WW',
+    'W.......E......F....WW.................WWWWWWWWWWWW............WW........WW...WW',
+    'W...................WWW.................WWWWWWWWWW.............W..........W..WWW',
+    'W...................WWWW.................WWWWWWWW.........................W.WWWW',
+    'WWW............P...WWWWW..................WWWWW...........................WWWWWW',
+    'WWW......M.........WWWWW.................WWWWWWW.......................WWWWWWWWW',
+    'W.......MMM......................T.......WWWWW.......................WWWWWWWWWWW',
+    'W........M...............E......TTT.....WWWWWW..............WWW....WWWWWWWWWWWWW',
+    'W...E.......H..................TTT.....WWWWWW...............WWWWWWWWWWWWWWWWWWWW',
+    'W....................C.........T.......WWWWWWW..............WWWW....WWWWWWWWWWWW',
+    'W.......F..............................WWWWW.............................WWWWWWW',
+    'W....T.........................F......BBBBBBB...............................WWWW',
+    'W....TT................S..............BBBBBBB.................................WW',
+    'W....TTT...............................WWWWW..................................WW',
+    'W....TTTTT......F......................WWWWWWWW..............W...............WWW',
+    'W....TTTTT.............................WWWWWWW..............WWW...........Z...WW',
+    'W....TTTT..............................WWWWWW................W.................W',
+    'W....TT......................W.........WWWWWWW................................WW',
+    'W....TT........E......F.....WWW........WWWWWWWW.............................WWWW',
+    'W....T.......................W.........WWWWWWWWWWWW.......................WWWWWW',
+    'W...................W...........F......WWWWWWWWWW.....................WWWWWWWWWW',
+    'W..................WWW..............WWWWWWWWW......................WWWWWWWWWWWWW',
+    'WWW...............WWWWW..........WWWWWWWWWWWWWW..................WWWWWWWWWWWWWWW',
+    'WWWWWW............WWWWW......WWWWWWWWWWWWWWWWWWWWWW..........WWWWWWWWWWWWWWWWWWW',
+    'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
+    'WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW'
 ]
 
 mapTest = ['WBBBBBBBBBBW',

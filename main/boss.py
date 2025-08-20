@@ -1,10 +1,11 @@
 import math
 import pygame
 from config import *
+from a_star import *
 from healthbar import *
 import random
 
-class Enemy(pygame.sprite.Sprite):
+class Boss(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
         self.game = game
         self._layer = ENEMY_LAYER
@@ -18,19 +19,19 @@ class Enemy(pygame.sprite.Sprite):
         self.dx = 0
         self.dy = 0
 
-        self.image = self.game.enemy_spritesheet.get_sprite(63, 167, self.width, self.height)
+        self.image = self.game.purple_slime_spritesheet.get_sprite(63, 167, self.width, self.height)
         self.rect = self.image.get_rect()
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
 
         self.direction = random.choice(['left', 'right', 'up', 'down'])
+        self.path = []
         self.maxSteps = random.choice(range(20, 120, 10))
         self.currSteps = 0
         
-        self.state = "moving"
         self.animationCounter = 0
 
-        self.health = ENEMY_HEALTH
+        self.health = BOSS_HEALTH
 
         self.shootCounter = 0
         self.waitShoot = random.choice(range(10, 91, 10))
@@ -38,17 +39,19 @@ class Enemy(pygame.sprite.Sprite):
 
         # Loading sprite frames
         self.rightAnimation = []
-        self.game.enemy_spritesheet.parse_sprite('slime_green', 'right', self.rightAnimation)
+        self.game.purple_slime_spritesheet.parse_sprite('slime_green', 'right', self.rightAnimation)
         self.upAnimation = []
-        self.game.enemy_spritesheet.parse_sprite('slime_green', 'up', self.upAnimation)
+        self.game.purple_slime_spritesheet.parse_sprite('slime_green', 'up', self.upAnimation)
 
         self.leftAnimation = []
-        for frame in self.rightAnimation:
-            self.leftAnimation.append(pygame.transform.flip(frame, True, False))
+        for i in range(len(self.rightAnimation)):
+            self.rightAnimation[i] = pygame.transform.scale(self.rightAnimation[i], (self.width, self.height))
+            self.leftAnimation.append(pygame.transform.flip(self.rightAnimation[i], True, False))
 
         self.downAnimation = []
-        for frame in self.upAnimation:
-            self.downAnimation.append(pygame.transform.flip(frame, False, True))
+        for i in range(len(self.upAnimation)):
+            self.upAnimation[i] = pygame.transform.scale(self.upAnimation[i], (self.width, self.height))
+            self.downAnimation.append(pygame.transform.flip(self.upAnimation[i], False, True))
 
     def shoot(self):
         self.shootCounter += 1
@@ -66,31 +69,28 @@ class Enemy(pygame.sprite.Sprite):
         return diffX < ENEMY_DETECTION_RANGE * TILESIZE and diffY < ENEMY_DETECTION_RANGE * TILESIZE
     
     def move(self):
-        if self.state == "moving":
-            if self.direction == 'left':
-                self.dx -= ENEMY_STEPS
-                self.currSteps += 1
-            elif self.direction == 'right':
-                self.dx += ENEMY_STEPS
-                self.currSteps += 1
-            elif self.direction == 'up':
-                self.dy -= ENEMY_STEPS
-                self.currSteps += 1
-            elif self.direction == 'down':
-                self.dy += ENEMY_STEPS
-                self.currSteps += 1
-            
-            if self.shootState == 'shoot':
-                Projectile(self.game, self.rect.x, self.rect.y, self.direction, False)
-                self.shootState = 'halt'
+        cords = self.cords_to_map()
+        print(cords)
+        if self.path == [] or not type(self.path) == list:
+            self.path = get_path(cords, self.game.player.cords_to_map())
+            # self.path = get_path((5, 5), (5, 9))
+            print(self.path)
 
-        elif self.state == "stalling":
-            self.currSteps += 1
+        if cords[1] < self.path[0][1]:
+            self.dx += ENEMY_STEPS
+        else:
+            self.dx -= ENEMY_STEPS
+        
+        if cords[0] < self.path[0][0]:
+            self.dy += ENEMY_STEPS
+        else:
+            self.dy -= ENEMY_STEPS
+        
+        self.path = self.path[1:]
             
-            if self.currSteps == self.maxSteps:
-                self.state = "moving"
-                self.currSteps = 0
-                self.direction = random.choice(['left', 'right', 'up', 'down'])
+        if self.shootState == 'shoot':
+            Projectile(self.game, self.rect.x, self.rect.y, self.direction, False)
+            self.shootState = 'halt'
 
     def update(self):
         self.move()
@@ -99,13 +99,6 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.y += self.dy
         self.dx = 0
         self.dy = 0
-
-        if self.currSteps == self.maxSteps:
-            if self.state != "stalling":
-                self.currSteps = 0
-        
-            self.maxSteps = random.choice(range(20, 120, 10))
-            self.state = "stalling"
 
         self.collide_blocks()
         self.collide_player()
@@ -165,9 +158,15 @@ class Enemy(pygame.sprite.Sprite):
         self.health = self.health - amount
 
         if self.health <= 0:
-            self.game.score += ENEMY_KILL_POINTS
+            self.game.score += BOSS_KILL_POINTS
             self.kill()
             self.healthbar.kill()
             self.game.player.max_mana += 1
         else:
-            self.healthbar.damage(ENEMY_HEALTH, self.health)
+            self.healthbar.damage(BOSS_HEALTH, self.health)
+
+    def cords_to_map(self):
+        sprite = list(self.game.all_sprites)[0]
+        x = ((-sprite.rect.x + self.rect.x) + TILESIZE // 2) // TILESIZE
+        y = ((-sprite.rect.y + self.rect.y) + TILESIZE // 2) // TILESIZE
+        return (y, x)

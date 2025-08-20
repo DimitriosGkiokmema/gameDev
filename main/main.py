@@ -1,4 +1,5 @@
 from tiles import *
+from boss import *
 from enemy import *
 from config import *
 from button import *
@@ -23,8 +24,8 @@ class Game:
         self.buttons = []
 
         self.running = True
-        self.game_state = 'main menu'
-        # self.game_state = 'Play'
+        # self.game_state = 'main menu'
+        self.game_state = 'Play'
         self.paused = False
 
         self.enemyCollided = False
@@ -55,6 +56,8 @@ class Game:
                     Fruit(self, j, i)
                 elif column == 'B':
                     Bridge(self, j, i, 1, 90)
+                elif column == 'Z':
+                    Boss(self, j, i)
                 else:
                     edge = False
                     side = 'ground'
@@ -97,6 +100,7 @@ class Game:
         self.terrain_spritesheet = Spritesheet('overworld.png')
         self.player_spritesheet = Spritesheet('player.png')
         self.enemy_spritesheet = Spritesheet('slime_green.png')
+        self.purple_slime_spritesheet = Spritesheet('slime_purple.png')
         self.weapons_spritesheet = Spritesheet('swords.png')
         self.projectile_spritesheet = Spritesheet('fireball.png')
         self.coin_spritesheet = Spritesheet('coin.png')
@@ -196,6 +200,10 @@ class Game:
         self.screen.blit(space, (KEY_X, KEY_Y + 2 * BTN_HEIGHT))
         shoot = self.font.render('shoot', True, 'black')
         self.screen.blit(shoot, (KEY_X + BTN_WIDTH, KEY_Y + 2 * BTN_HEIGHT))
+        key = self.font.render('Q:', True, 'black')
+        self.screen.blit(key, (KEY_X, KEY_Y + 4 * BTN_HEIGHT))
+        pause = self.font.render('pause', True, 'black')
+        self.screen.blit(pause, (KEY_X + BTN_WIDTH, KEY_Y + 4 * BTN_HEIGHT))
 
         Button(self, PAUSE_CLOSE_X, PAUSE_Y, BTN_HEIGHT, BACK_BTN_WIDTH, 'main menu', ' X')
 
@@ -213,16 +221,16 @@ class Game:
             pressed = pygame.key.get_pressed()
 
             if pressed[pygame.K_LEFT]:
-                for i, sprite in enumerate(self.all_sprites):
+                for sprite in self.all_sprites:
                     sprite.rect.x += PLAYER_STEPS
             elif pressed[pygame.K_RIGHT]:
-                for i, sprite in enumerate(self.all_sprites):
+                for sprite in self.all_sprites:
                     sprite.rect.x -= PLAYER_STEPS
             elif pressed[pygame.K_UP]:
-                for i, sprite in enumerate(self.all_sprites):
+                for sprite in self.all_sprites:
                     sprite.rect.y += PLAYER_STEPS
             elif pressed[pygame.K_DOWN]:
-                for i, sprite in enumerate(self.all_sprites):
+                for sprite in self.all_sprites:
                     sprite.rect.y -= PLAYER_STEPS
     
     def play_sound(self, filename):
