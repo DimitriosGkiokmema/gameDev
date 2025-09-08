@@ -15,4 +15,8 @@ A retro style 2D rpg game with combat, collectables, score, and intelligent boss
 ![Gameplay](assets/images/game_screen.png)
 Players move around a large map and kill enemies, collect coins, and eat fruit to regenerate their health. Killing enemies increases your mana, which lets you cast more fireballs.
 
-Boss?
+
+<video width="600" height="300" controls>
+  <source src="https://github.com/user-attachments/assets/e9780cdb-da99-4ecc-8987-57372e0bf00e" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
