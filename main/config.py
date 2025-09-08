@@ -50,7 +50,7 @@ MANA_BAR_X = WIN_WIDTH / 2 - 4 * TILESIZE
 MANA_BAR_Y = SCORE_Y
 
 # Game Variables
-TITLE = "Land of Lost"
+TITLE = "Land of The Lost"
 # Layers
 PLAYER_LAYER = 5
 ENEMY_LAYER = 3

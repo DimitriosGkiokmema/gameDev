@@ -165,7 +165,7 @@ class Game:
 
         # Game title
         txt = self.font.render(TITLE, True, 'white')
-        self.screen.blit(txt, (SCORE_X / 2, SCORE_Y * 6))
+        self.screen.blit(txt, (SCORE_X / 2.1, SCORE_Y * 6))
 
         # Buttons
         Button(self, BTN_X, PLAY_BTN_Y, BTN_HEIGHT, BTN_WIDTH, 'Play', 'Play')
