@@ -24,8 +24,8 @@ class Game:
         self.buttons = []
 
         self.running = True
-        # self.game_state = 'main menu'
-        self.game_state = 'Play'
+        self.game_state = 'main menu'
+        # self.game_state = 'Play'
         self.paused = False
 
         self.enemyCollided = False
