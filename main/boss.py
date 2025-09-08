@@ -28,6 +28,7 @@ class Boss(pygame.sprite.Sprite):
         self.path = []
         self.maxSteps = random.choice(range(20, 120, 10))
         self.currSteps = 0
+        self.player_detected = False
         
         self.animationCounter = 0
 
@@ -66,15 +67,13 @@ class Boss(pygame.sprite.Sprite):
         diffX = abs(self.rect.x - pX)
         diffY = abs(self.rect.y - pY)
 
-        return diffX < ENEMY_DETECTION_RANGE * TILESIZE and diffY < ENEMY_DETECTION_RANGE * TILESIZE
+        return diffX < BOSS_DETECTION_RANGE * TILESIZE and diffY < BOSS_DETECTION_RANGE * TILESIZE
     
     def move(self):
         cords = self.cords_to_map()
-        print(cords)
         if self.path == [] or not type(self.path) == list:
             self.path = get_path(cords, self.game.player.cords_to_map())
             # self.path = get_path((5, 5), (5, 9))
-            print(self.path)
 
         if cords[1] < self.path[0][1]:
             self.dx += ENEMY_STEPS
@@ -93,7 +92,12 @@ class Boss(pygame.sprite.Sprite):
             self.shootState = 'halt'
 
     def update(self):
-        self.move()
+        if self.playerInRange():
+            self.player_detected = True
+        
+        if self.player_detected:
+            self.move()
+
         self.animation()
         self.rect.x += self.dx
         self.rect.y += self.dy
